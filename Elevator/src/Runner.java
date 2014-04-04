@@ -1,12 +1,18 @@
+import console.factories.PropertiesFactory;
+import console.interfaces.IPropertiesReader;
+
 
 public class Runner {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int storiesNumber = 2;
-		int elevatorCapacity = 1;
-		int passengersNumber = 1;
-		double animationBoost = 0;
+		IPropertiesReader propertiesReader = PropertiesFactory.getClassFromFactory();
+		int storiesNumber = propertiesReader.getStoriesNumber();
+		int elevatorCapacity = propertiesReader.getElevatorCapacity();
+		int passengersNumber = propertiesReader.getPassengersNumber();
+		double animationBoost = propertiesReader.getAnimationBoost();
+		System.out.println(storiesNumber + ";" + elevatorCapacity + ";" + passengersNumber + ";" +
+				animationBoost);
 	}
 
 }
