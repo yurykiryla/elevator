@@ -1,10 +1,12 @@
 package console.beans;
 
 import console.constants.TransportationState;
+import console.implementations.TransportationTask;
 
 public class Passenger {
 	private final int id;
 	private final int destinationStory;
+	private final TransportationTask transportationTask;
 	private TransportationState transportationState;
 	
 	public Passenger(int id, int destinationStory) {
@@ -12,6 +14,7 @@ public class Passenger {
 		this.id = id;
 		this.destinationStory = destinationStory;
 		this.transportationState = TransportationState.NOT_STARTED;
+		transportationTask = new TransportationTask(this);
 	}
 	
 	public TransportationState getTransportationState() {
@@ -60,5 +63,9 @@ public class Passenger {
 		return true;
 	}
 	
+	public void transportation(){
+		Thread transportationThread = new Thread(transportationTask);
+		transportationThread.start();
+	}
 	
 }

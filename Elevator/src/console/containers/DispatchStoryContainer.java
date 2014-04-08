@@ -1,5 +1,6 @@
 package console.containers;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import console.beans.Passenger;
@@ -11,6 +12,15 @@ public class DispatchStoryContainer {
 	public DispatchStoryContainer(int story) {
 		super();
 		this.story = story;
+		passengers = new HashSet<>();
+	}
+	
+	public void addPassenger(Passenger passenger){
+		passengers.add(passenger);
+	}
+
+	public int getStory() {
+		return story;
 	}
 	
 	
