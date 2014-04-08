@@ -18,7 +18,7 @@ public class Runner {
 				animationBoost);
 		
 		for(int i = 0; i < 100; i++){
-			System.out.println(getRandomStory(storiesNumber));
+			System.out.println(getRandomStory(storiesNumber, 3));
 		}
 	}
 	
