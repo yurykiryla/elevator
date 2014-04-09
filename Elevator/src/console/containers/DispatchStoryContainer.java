@@ -1,9 +1,10 @@
 package console.containers;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
-import console.beans.Passenger;
+import console.items.Passenger;
 
 public class DispatchStoryContainer {
 	private final int story;
@@ -23,5 +24,11 @@ public class DispatchStoryContainer {
 		return story;
 	}
 	
+	public boolean isEmpty(){
+		return passengers.isEmpty();
+	}
 	
+	public Iterator<Passenger> getIterator(){
+		return passengers.iterator();
+	}
 }

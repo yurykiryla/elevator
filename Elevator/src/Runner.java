@@ -1,12 +1,13 @@
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import console.beans.Passenger;
 import console.containers.DispatchStoryContainer;
 import console.factories.PropertiesFactory;
 import console.interfaces.IPropertiesReader;
+import console.items.Passenger;
 
 
 public class Runner {
@@ -19,6 +20,7 @@ public class Runner {
 		int passengersNumber = propertiesReader.getPassengersNumber();
 		double animationBoost = propertiesReader.getAnimationBoost();
 		
+		//testing
 		System.out.println(storiesNumber + ";" + elevatorCapacity + ";" + passengersNumber + ";" +
 				animationBoost);
 		
@@ -35,11 +37,20 @@ public class Runner {
 				arrivalStory++;
 			}
 			
+			//testing
 			System.out.println(dispatchStory + ";" + arrivalStory);
 			
 			dispatchStoryContainers.get(dispatchStory).addPassenger(new Passenger(i, arrivalStory));
 			
 		}
+		
+		for(DispatchStoryContainer dispatchStoryContainer : dispatchStoryContainers){
+			Iterator<Passenger> iterator = dispatchStoryContainer.getIterator();
+			while(iterator.hasNext()){
+				iterator.next().transportation();
+			}
+		}
+		
 		
 		
 	}

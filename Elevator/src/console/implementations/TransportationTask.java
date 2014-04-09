@@ -1,7 +1,7 @@
 package console.implementations;
 
-import console.beans.Passenger;
 import console.constants.TransportationState;
+import console.items.Passenger;
 
 public class TransportationTask implements Runnable {
 	private Passenger passenger;
@@ -14,6 +14,9 @@ public class TransportationTask implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		passenger.setTransportationState(TransportationState.IN_PROGRESS);
+		
+		//testing
+		System.out.println(passenger);
 	}
 
 }

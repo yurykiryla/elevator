@@ -1,4 +1,4 @@
-package console.beans;
+package console.items;
 
 import console.constants.TransportationState;
 import console.implementations.TransportationTask;
@@ -37,12 +37,11 @@ public class Passenger {
 	public String toString() {
 		return id + ";" + destinationStory + ";" + transportationState;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + destinationStory;
 		result = prime * result + id;
 		return result;
 	}
@@ -56,13 +55,11 @@ public class Passenger {
 		if (getClass() != obj.getClass())
 			return false;
 		Passenger other = (Passenger) obj;
-		if (destinationStory != other.destinationStory)
-			return false;
 		if (id != other.id)
 			return false;
 		return true;
 	}
-	
+
 	public void transportation(){
 		Thread transportationThread = new Thread(transportationTask);
 		transportationThread.start();
