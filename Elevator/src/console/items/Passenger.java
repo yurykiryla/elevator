@@ -1,7 +1,7 @@
 package console.items;
 
 import console.constants.TransportationState;
-import console.implementations.TransportationTask;
+import console.transportation.TransportationTask;
 
 public class Passenger {
 	private final int id;
