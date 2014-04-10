@@ -11,6 +11,19 @@ public class Building {
 		this.elevator = elevator;
 		this.storeys = storeys;
 	}
+
+	@Override
+	public String toString() {
+		return "Building [elevator=" + elevator + ", storeys=" + storeys + "]";
+	}
+
+	public Elevator getElevator() {
+		return elevator;
+	}
+
+	public List<Storey> getStoreys() {
+		return storeys;
+	}
 	
 	
 }

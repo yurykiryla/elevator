@@ -1,15 +1,19 @@
 package console.transportation;
 
 import console.constants.TransportationState;
+import console.items.Building;
 import console.items.Passenger;
 
 public class TransportationTask implements Runnable {
-	private Passenger passenger;
+	private final Passenger passenger;
+	private final Building building;
 	
-	
-	public TransportationTask(Passenger passenger) {
+	public TransportationTask(Passenger passenger, Building building) {
+		super();
 		this.passenger = passenger;
+		this.building = building;
 	}
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub

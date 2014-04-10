@@ -1,13 +1,15 @@
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 import console.factories.PropertiesFactory;
 import console.interfaces.IPropertiesReader;
+import console.items.Building;
+import console.items.Elevator;
 import console.items.Passenger;
 import console.items.Storey;
+import console.transportation.TransportationProcess;
 
 
 public class Runner {
@@ -42,6 +44,13 @@ public class Runner {
 			
 			Passenger passenger = new Passenger(i, dispatchStory, destinationStory);
 			storeys.get(dispatchStory).addNewPassenger(passenger);
+		}
+		
+		Building building = new Building(new Elevator(elevatorCapacity, 0), storeys);
+		
+		if(animationBoost == 0.0){
+			TransportationProcess transportationProcess = new TransportationProcess(building);
+			transportationProcess.start();
 		}
 	}
 }

@@ -19,6 +19,10 @@ public class Storey {
 		dispatchStoryContainer.add(passenger);
 	}
 
+	public Set<Passenger> getDispatchStoryContainer() {
+		return dispatchStoryContainer;
+	}
+
 	@Override
 	public String toString() {
 		return "Storey [storeyNumber=" + storeyNumber
