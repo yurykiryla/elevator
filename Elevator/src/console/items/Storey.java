@@ -21,6 +21,10 @@ public class Storey {
 
 	public Set<Passenger> getDispatchStoryContainer() {
 		return dispatchStoryContainer;
+	}	
+	
+	public Set<Passenger> getArrivalStoryContainer() {
+		return arrivalStoryContainer;
 	}
 
 	@Override

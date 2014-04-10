@@ -11,6 +11,15 @@ public class Building {
 		this.elevator = elevator;
 		this.storeys = storeys;
 	}
+	
+	public int getTotalPassengers(){
+		int totalPassengers = elevator.getElevatorContainer().size();
+		for(Storey storey : storeys){
+			totalPassengers += storey.getDispatchStoryContainer().size();
+			totalPassengers += storey.getArrivalStoryContainer().size();
+		}
+		return totalPassengers;
+	}
 
 	@Override
 	public String toString() {

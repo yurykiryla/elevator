@@ -17,6 +17,18 @@ public class Elevator {
 
 	public int getCapacity() {
 		return capacity;
+	}	
+
+	public int getCurrentStory() {
+		return currentStory;
+	}
+
+	public void setCurrentStory(int currentStory) {
+		this.currentStory = currentStory;
+	}
+
+	public Set<Passenger> getElevatorContainer() {
+		return elevatorContainer;
 	}
 
 	@Override

@@ -27,5 +27,8 @@ public class TransportationProcess {
 				transportationTask.start();
 			}
 		}
+		
+		Controller controller = new Controller(building);
+		controller.run();
 	}
 }
