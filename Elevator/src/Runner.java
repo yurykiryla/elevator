@@ -4,10 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import console.containers.DispatchStoryContainer;
 import console.factories.PropertiesFactory;
 import console.interfaces.IPropertiesReader;
 import console.items.Passenger;
+import console.items.Storey;
 
 
 public class Runner {
@@ -24,35 +24,24 @@ public class Runner {
 		System.out.println(storiesNumber + ";" + elevatorCapacity + ";" + passengersNumber + ";" +
 				animationBoost);
 		
-		List<DispatchStoryContainer> dispatchStoryContainers = new ArrayList<>();
+		List<Storey> storeys = new ArrayList<>();
 		for(int i = 0; i < storiesNumber; i++){
-			dispatchStoryContainers.add(new DispatchStoryContainer(i));
+			storeys.add(new Storey(i));
 		}
 		
 		Random rnd = new Random();
 		for (int i = 0; i < passengersNumber; i++){
 			int dispatchStory = rnd.nextInt(storiesNumber);
-			int arrivalStory = rnd.nextInt(storiesNumber - 1);
-			if (arrivalStory >= dispatchStory){
-				arrivalStory++;
+			int destinationStory = rnd.nextInt(storiesNumber - 1);
+			if (destinationStory >= dispatchStory){
+				destinationStory++;
 			}
 			
 			//testing
-			System.out.println(dispatchStory + ";" + arrivalStory);
+			System.out.println(dispatchStory + ";" + destinationStory);
 			
-			dispatchStoryContainers.get(dispatchStory).addPassenger(new Passenger(i, arrivalStory));
-			
+			Passenger passenger = new Passenger(i, dispatchStory, destinationStory);
+			storeys.get(dispatchStory).addNewPassenger(passenger);
 		}
-		
-		for(DispatchStoryContainer dispatchStoryContainer : dispatchStoryContainers){
-			Iterator<Passenger> iterator = dispatchStoryContainer.getIterator();
-			while(iterator.hasNext()){
-				iterator.next().transportation();
-			}
-		}
-		
-		
-		
 	}
-	
 }

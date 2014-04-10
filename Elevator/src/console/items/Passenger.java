@@ -5,39 +5,45 @@ import console.transportation.TransportationTask;
 
 public class Passenger {
 	private final int id;
+	private final int dispatchStory;
 	private final int destinationStory;
-	private final TransportationTask transportationTask;
 	private TransportationState transportationState;
-	
-	public Passenger(int id, int destinationStory) {
+
+	public Passenger(int id, int dispatchStory, int destinationStory) {
 		super();
 		this.id = id;
+		this.dispatchStory = dispatchStory;
 		this.destinationStory = destinationStory;
-		this.transportationState = TransportationState.NOT_STARTED;
-		transportationTask = new TransportationTask(this);
+		transportationState = TransportationState.NOT_STARTED;
 	}
-	
+
 	public TransportationState getTransportationState() {
 		return transportationState;
 	}
-	
+
 	public void setTransportationState(TransportationState transportationState) {
 		this.transportationState = transportationState;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
+	public int getDispatchStory() {
+		return dispatchStory;
+	}
+
 	public int getDestinationStory() {
 		return destinationStory;
 	}
-	
+
 	@Override
 	public String toString() {
-		return id + ";" + destinationStory + ";" + transportationState;
+		return "Passenger [id=" + id + ", dispatchStory=" + dispatchStory
+				+ ", destinationStory=" + destinationStory
+				+ ", transportationState=" + transportationState + "]";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -59,10 +65,4 @@ public class Passenger {
 			return false;
 		return true;
 	}
-
-	public void transportation(){
-		Thread transportationThread = new Thread(transportationTask);
-		transportationThread.start();
-	}
-	
 }
