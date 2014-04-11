@@ -11,7 +11,6 @@ public class TransportationTask implements Runnable {
 	private final Passenger passenger;
 	private final Building building;
 	private Controller controller;
-	private boolean isElevator = false;
 
 	public TransportationTask(Passenger passenger, Building building,
 			Controller controller) {
@@ -26,18 +25,13 @@ public class TransportationTask implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
-		try{
-			synchronized (controller) {
-				passenger.setTransportationState(TransportationState.IN_PROGRESS);
-				
-				//testing
-				System.out.println(passenger);
-				controller.notifyAll();
-			}
+		synchronized (controller) {
+			passenger.setTransportationState(TransportationState.IN_PROGRESS);
 			
-		}catch(Exception e){
-			e.printStackTrace();
+			//testing
+			System.out.println(passenger);
+
+			controller.notifyAll();
 		}
 		
 		
