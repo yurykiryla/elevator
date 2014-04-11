@@ -10,33 +10,37 @@ import console.items.Storey;
 public class TransportationTask implements Runnable {
 	private final Passenger passenger;
 	private final Building building;
+	private Controller controller;
 	private boolean isElevator = false;
-	
-	public TransportationTask(Passenger passenger, Building building) {
+
+	public TransportationTask(Passenger passenger, Building building,
+			Controller controller) {
 		super();
 		this.passenger = passenger;
 		this.building = building;
+		this.controller = controller;
 	}
+
+
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		passenger.setTransportationState(TransportationState.IN_PROGRESS);
-		
-		//testing
-		System.out.println(passenger);
-		
-		Set<Passenger> dispatchStoryContainer = building.getStoreys().get(passenger.getDispatchStory()).getDispatchStoryContainer();
 		
 		try{
-			synchronized (dispatchStoryContainer) {
-				if(!isElevator){
-					wait();
-				}
+			synchronized (controller) {
+				passenger.setTransportationState(TransportationState.IN_PROGRESS);
+				
+				//testing
+				System.out.println(passenger);
+				controller.notifyAll();
 			}
-		}catch(InterruptedException e){
+			
+		}catch(Exception e){
 			e.printStackTrace();
 		}
+		
+		
 	}
 
 }

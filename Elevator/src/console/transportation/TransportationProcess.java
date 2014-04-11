@@ -19,16 +19,25 @@ public class TransportationProcess {
 		//testing
 		System.out.println("Starting transportation\n" + building);
 		
+		Controller controller = new Controller(building);
+		
 		List<Storey> storeys = building.getStoreys();
 		for(Storey storey : storeys){
 			Set<Passenger> dispatchStoryContainer = storey.getDispatchStoryContainer();
 			for(Passenger passenger : dispatchStoryContainer){
-				Thread transportationTask = new Thread(new TransportationTask(passenger, building));
-				transportationTask.start();
+				try{
+					synchronized (controller) {
+						Thread transportationTask = new Thread(new TransportationTask(passenger, building, controller));
+						transportationTask.start();
+						controller.wait();
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
 			}
 		}
 		
-		Controller controller = new Controller(building);
+		
 		controller.run();
 	}
 }
