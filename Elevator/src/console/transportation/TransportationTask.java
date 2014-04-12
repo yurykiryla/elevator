@@ -6,7 +6,6 @@ import console.constants.Directions;
 import console.constants.TransportationState;
 import console.items.Building;
 import console.items.Passenger;
-import console.items.Storey;
 
 public class TransportationTask implements Runnable {
 	private final Passenger passenger;
@@ -40,56 +39,33 @@ public class TransportationTask implements Runnable {
 		
 		
 		try{
-			synchronized (dispatchStoryContainer) {
-				synchronized (controller) {
-					passenger.setTransportationState(TransportationState.IN_PROGRESS);
-					//testing
-					System.out.println(passenger);
-					controller.notify();
-				}
-				dispatchStoryContainer.wait();
+			synchronized (building) {
+				passenger.setTransportationState(TransportationState.IN_PROGRESS);
+				building.notify();
 			}
-	
-			while(!controller.boadingPassenger(this)){
-				synchronized (dispatchStoryContainer) {
-					synchronized (controller) {
-						if(elevatorContainer.size() == controller.getElevatorCapacity()){
-							controller.notify();
-						}
-					}
+			
+			synchronized (dispatchStoryContainer) {
+				dispatchStoryContainer.wait();
+				while(!controller.boadingPassenger(this)){
 					dispatchStoryContainer.wait();
 				}
+				dispatchStoryContainer.notifyAll();
 			}
 			
 			synchronized (elevatorContainer) {
-				synchronized (controller) {
-					if(elevatorContainer.size() == controller.getElevatorCapacity()){
-						controller.notify();
-					}
-				}
 				elevatorContainer.wait();
-			}
-			while(!controller.deboadingPassenger(passenger)){
-				synchronized (elevatorContainer) {
-					synchronized (controller) {
-						if(elevatorContainer.size() == controller.getElevatorCapacity()){
-							controller.notify();
-						}
-					}
+				while(!controller.deboadingPassenger(passenger)){
 					elevatorContainer.wait();
 				}
+				elevatorContainer.notifyAll();
 			}
-			synchronized (controller) {
-				if(elevatorContainer.size() == controller.getElevatorCapacity()){
-					controller.notify();
-				}
-			}
+	
+
 		}catch(InterruptedException e){
 			e.printStackTrace();
 		}
 		
 		passenger.setTransportationState(TransportationState.COMPLETED);
-		System.out.println(passenger);
 	}
 
 

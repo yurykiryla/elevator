@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import console.factories.PropertiesFactory;
 import console.interfaces.IPropertiesReader;
@@ -9,7 +10,8 @@ import console.items.Building;
 import console.items.Elevator;
 import console.items.Passenger;
 import console.items.Storey;
-import console.transportation.TransportationProcess;
+import console.transportation.Controller;
+import console.transportation.TransportationTask;
 
 
 public class Runner {
@@ -21,11 +23,6 @@ public class Runner {
 		int elevatorCapacity = propertiesReader.getElevatorCapacity();
 		int passengersNumber = propertiesReader.getPassengersNumber();
 		double animationBoost = propertiesReader.getAnimationBoost();
-		
-		//testing
-		System.out.println(storiesNumber + ";" + elevatorCapacity + ";" + passengersNumber + ";" +
-				animationBoost);
-		
 		List<Storey> storeys = new ArrayList<>();
 		for(int i = 0; i < storiesNumber; i++){
 			storeys.add(new Storey(i));
@@ -38,19 +35,33 @@ public class Runner {
 			if (destinationStory >= dispatchStory){
 				destinationStory++;
 			}
-			
-			//testing
-			System.out.println(dispatchStory + ";" + destinationStory);
-			
 			Passenger passenger = new Passenger(i, dispatchStory, destinationStory);
 			storeys.get(dispatchStory).addNewPassenger(passenger);
 		}
 		
-		Building building = new Building(new Elevator(elevatorCapacity, 0), storeys);
+		Building building = new Building(new Elevator(elevatorCapacity, 0), storeys, passengersNumber);
+		
+		Controller controller = new Controller(building);
+		
+		for(Storey storey : storeys){
+			Set<Passenger> dispatchStoryContainer = storey.getDispatchStoryContainer();
+			for(Passenger passenger : dispatchStoryContainer){
+				try{
+					synchronized (building) {
+						//Thread.sleep(1000);
+						Thread transportationTask = new Thread(new TransportationTask(passenger, building, controller));
+						transportationTask.start();
+						building.wait();
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		
 		if(animationBoost == 0.0){
-			TransportationProcess transportationProcess = new TransportationProcess(building);
-			transportationProcess.start();
+			controller.run();
 		}
 	}
 }

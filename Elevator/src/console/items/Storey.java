@@ -27,6 +27,10 @@ public class Storey {
 		return arrivalStoryContainer;
 	}
 	
+	public int getStoreyNumber() {
+		return storeyNumber;
+	}
+
 	public void boadingPassenger(Passenger passenger){
 		dispatchStoryContainer.remove(passenger);
 	}
