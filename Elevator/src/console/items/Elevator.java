@@ -30,6 +30,14 @@ public class Elevator {
 	public Set<Passenger> getElevatorContainer() {
 		return elevatorContainer;
 	}
+	
+	public void boadingPassenger(Passenger passenger){
+		elevatorContainer.add(passenger);
+	}
+	
+	public void deboadingPassenger(Passenger passenger){
+		elevatorContainer.remove(passenger);
+	}
 
 	@Override
 	public String toString() {

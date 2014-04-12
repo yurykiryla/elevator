@@ -7,6 +7,7 @@ public class Passenger {
 	private final int id;
 	private final int dispatchStory;
 	private final int destinationStory;
+	private TransportationTask transportationTask;
 	private TransportationState transportationState;
 
 	public Passenger(int id, int dispatchStory, int destinationStory) {
@@ -35,6 +36,14 @@ public class Passenger {
 
 	public int getDestinationStory() {
 		return destinationStory;
+	}
+
+	public TransportationTask getTransportationTask() {
+		return transportationTask;
+	}
+
+	public void setTransportationTask(TransportationTask transportationTask) {
+		this.transportationTask = transportationTask;
 	}
 
 	@Override

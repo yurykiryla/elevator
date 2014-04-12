@@ -26,6 +26,14 @@ public class Storey {
 	public Set<Passenger> getArrivalStoryContainer() {
 		return arrivalStoryContainer;
 	}
+	
+	public void boadingPassenger(Passenger passenger){
+		dispatchStoryContainer.remove(passenger);
+	}
+
+	public void deboadingPassenger(Passenger passenger){
+		arrivalStoryContainer.add(passenger);
+	}
 
 	@Override
 	public String toString() {
