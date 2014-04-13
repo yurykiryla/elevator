@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import console.exceptions.SynchronizedException;
 import console.factories.PropertiesFactory;
 import console.interfaces.IPropertiesReader;
 import console.items.Building;
@@ -48,13 +49,12 @@ public class Runner {
 			for(Passenger passenger : dispatchStoryContainer){
 				try{
 					synchronized (building) {
-						//Thread.sleep(1000);
 						Thread transportationTask = new Thread(new TransportationTask(passenger, building, controller));
 						transportationTask.start();
 						building.wait();
 					}
-				}catch(Exception e){
-					e.printStackTrace();
+				}catch(InterruptedException e){
+					throw new SynchronizedException(e);
 				}
 			}
 		}

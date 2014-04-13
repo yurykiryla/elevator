@@ -7,23 +7,39 @@ import org.apache.log4j.PropertyConfigurator;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import console.constants.Actions;
 import console.constants.Directions;
+import console.exceptions.SynchronizedException;
 import console.items.Building;
 import console.items.Elevator;
 import console.items.Passenger;
 
 public class Controller {
-	private Building building;	
-	private Elevator elevator;
+	private final Building building;	
+	private final Elevator elevator;
 	private int currentStory;
 	private int transferPassengers = 0;
 	private final int totalPassengers;
 	private final int totalStories;
-	private Directions direction = Directions.UP;
+	private Directions direction;
 	private Set<Passenger> elevatorContainer;
 	private final int elevatorCapacity;
 	private Logger logger = Logger.getLogger(Controller.class);
+	private static final String FILENAME_LOG_PROPERTIES = "src/source/log4j.properties";
 	
 	public Controller(Building building) {
 		super();
@@ -34,24 +50,24 @@ public class Controller {
 		totalStories = building.getStoreys().size();
 		elevatorContainer = elevator.getElevatorContainer();
 		elevatorCapacity = elevator.getCapacity();
-		PropertyConfigurator.configure("src/source/log4j.properties");
+		PropertyConfigurator.configure(FILENAME_LOG_PROPERTIES);
 	}
 
 	public void run(){
 		logger.info(Actions.STARTING_TRANSPORTATION);
-		try{
-			while (true){
-				if (currentStory == 0){
-					direction = Directions.UP;
-				}
-				if (currentStory == totalStories - 1){
-					direction = Directions.DOWN;
-				}
+		while (true){
+			if (currentStory == 0){
+				direction = Directions.UP;
+			}
+			if (currentStory == totalStories - 1){
+				direction = Directions.DOWN;
+			}
+			try{
 				synchronized (elevatorContainer) {
-					if(elevatorContainer.size() > 0 && isDeboadingPassenger()){
+					if(isDeboadingPassenger()){
 						elevatorContainer.notifyAll();
 					}
-					while(elevatorContainer.size() > 0 && isDeboadingPassenger()){
+					while(isDeboadingPassenger()){
 						elevatorContainer.wait();
 					}
 				}
@@ -59,43 +75,42 @@ public class Controller {
 				Set<Passenger> dispatchStoryContainer = 
 						building.getStoreys().get(currentStory).getDispatchStoryContainer();
 				synchronized (dispatchStoryContainer) {
-					if(elevatorContainer.size() < elevatorCapacity && isBoadingPassenger(dispatchStoryContainer)){
+					if(isBoadingPassenger(dispatchStoryContainer)){
 						dispatchStoryContainer.notifyAll();
 					}
-					while(elevatorContainer.size() < elevatorCapacity && 
-							isBoadingPassenger(dispatchStoryContainer)){
+					while(isBoadingPassenger(dispatchStoryContainer)){
 						dispatchStoryContainer.wait();
 					}
 				}
-				
-				if(transferPassengers == totalPassengers){
-					break;
-				}
-				
-				switch (direction) {
-				case UP:
-					currentStory++;
-					break;
-				case DOWN:
-					currentStory--;
-					break;
-				}
-				logger.info(Actions.MOVING_ELEVATOR + getLoggingMessage());
+			}catch(InterruptedException e){
+				throw new SynchronizedException(e);
 			}
 			
-		}catch(Exception e){
-			e.printStackTrace();
+			if(transferPassengers == totalPassengers){
+				break;
+			}
+			
+			switch (direction) {
+			case UP:
+				currentStory++;
+				break;
+			case DOWN:
+				currentStory--;
+				break;
+			}
+			logger.info(Actions.MOVING_ELEVATOR + getLoggingMessage());
 		}
 		
-		if(building.isCompleteTransportation()){
-			logger.info(Actions.COMPLETION_TRANSPORTATION);
+		if(building.isValidTransportation()){
+			logger.info(Actions.VALID_TRANSPORTATION);
 		}
+		logger.info(Actions.COMPLETION_TRANSPORTATION);
 		
 	}
 	
-	public boolean boadingPassenger(TransportationTask transportationTask){
-		if(transportationTask.getDirection() == direction && elevatorContainer.size() < elevatorCapacity){
-			Passenger passenger = transportationTask.getPassenger();
+	public boolean boadingPassenger(Passenger passenger){
+		if(passenger.getTransportationTask().getDirection() == direction && 
+				elevatorContainer.size() < elevatorCapacity){
 			logger.info(Actions.BOADING_OF_PASSENGER + getLoggingMessage(passenger));
 			elevator.boadingPassenger(passenger);
 			building.getStoreys().get(passenger.getDispatchStory()).boadingPassenger(passenger);
@@ -118,6 +133,9 @@ public class Controller {
 	}
 	
 	private boolean isBoadingPassenger(Set<Passenger> dispatchStoryContainer){
+		if(elevatorContainer.size() == elevatorCapacity){
+			return false;
+		}
 		for(Passenger passenger : dispatchStoryContainer){
 			if(passenger.getTransportationTask().getDirection() == direction){
 				return true;
@@ -126,6 +144,9 @@ public class Controller {
 		return false;
 	}
 	private boolean isDeboadingPassenger(){
+		if(elevatorContainer.isEmpty()){
+			return false;
+		}
 		for(Passenger passenger : elevatorContainer){
 			if(passenger.getDestinationStory() == currentStory){
 				return true;

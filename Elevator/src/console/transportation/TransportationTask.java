@@ -4,13 +4,14 @@ import java.util.Set;
 
 import console.constants.Directions;
 import console.constants.TransportationState;
+import console.exceptions.SynchronizedException;
 import console.items.Building;
 import console.items.Passenger;
 
 public class TransportationTask implements Runnable {
 	private final Passenger passenger;
 	private final Building building;
-	private Controller controller;
+	private final Controller controller;
 	private Set<Passenger> elevatorContainer;
 	private Set<Passenger> dispatchStoryContainer;
 	private Directions direction;
@@ -31,8 +32,6 @@ public class TransportationTask implements Runnable {
 		}
 	}
 
-
-
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -43,10 +42,9 @@ public class TransportationTask implements Runnable {
 				passenger.setTransportationState(TransportationState.IN_PROGRESS);
 				building.notify();
 			}
-			
 			synchronized (dispatchStoryContainer) {
 				dispatchStoryContainer.wait();
-				while(!controller.boadingPassenger(this)){
+				while(!controller.boadingPassenger(passenger)){
 					dispatchStoryContainer.wait();
 				}
 				dispatchStoryContainer.notifyAll();
@@ -62,23 +60,17 @@ public class TransportationTask implements Runnable {
 	
 
 		}catch(InterruptedException e){
-			e.printStackTrace();
+			throw new SynchronizedException(e);
 		}
 		
 		passenger.setTransportationState(TransportationState.COMPLETED);
 	}
 
-
-
 	public Directions getDirection() {
 		return direction;
 	}
 
-
-
 	public Passenger getPassenger() {
 		return passenger;
 	}
-	
-	
 }

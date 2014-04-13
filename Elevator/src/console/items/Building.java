@@ -5,9 +5,9 @@ import java.util.List;
 import console.constants.TransportationState;
 
 public class Building {
-	private Elevator elevator;
-	private List<Storey> storeys;
-	private int totalPassengers;
+	private final Elevator elevator;
+	private final List<Storey> storeys;
+	private final int totalPassengers;
 	
 	public Building(Elevator elevator, List<Storey> storeys, int totalPassengers) {
 		super();
@@ -33,7 +33,7 @@ public class Building {
 		return storeys;
 	}
 	
-	public boolean isCompleteTransportation(){
+	public boolean isValidTransportation(){
 		if(!elevator.getElevatorContainer().isEmpty()){
 			return false;
 		}
