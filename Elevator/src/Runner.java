@@ -2,9 +2,8 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
-import console.exceptions.SynchronizedException;
+import ui.UIRunner;
 import console.factories.PropertiesFactory;
 import console.interfaces.IPropertiesReader;
 import console.items.Building;
@@ -12,7 +11,6 @@ import console.items.Elevator;
 import console.items.Passenger;
 import console.items.Storey;
 import console.transportation.Controller;
-import console.transportation.TransportationTask;
 
 
 public class Runner {
@@ -23,7 +21,7 @@ public class Runner {
 		int storiesNumber = propertiesReader.getStoriesNumber();
 		int elevatorCapacity = propertiesReader.getElevatorCapacity();
 		int passengersNumber = propertiesReader.getPassengersNumber();
-		double animationBoost = propertiesReader.getAnimationBoost();
+		int animationBoost = propertiesReader.getAnimationBoost();
 		List<Storey> storeys = new ArrayList<>();
 		for(int i = 0; i < storiesNumber; i++){
 			storeys.add(new Storey(i));
@@ -42,26 +40,12 @@ public class Runner {
 		
 		Building building = new Building(new Elevator(elevatorCapacity, 0), storeys, passengersNumber);
 		
-		Controller controller = new Controller(building);
+		Controller controller = building.getController();
 		
-		for(Storey storey : storeys){
-			Set<Passenger> dispatchStoryContainer = storey.getDispatchStoryContainer();
-			for(Passenger passenger : dispatchStoryContainer){
-				try{
-					synchronized (building) {
-						Thread transportationTask = new Thread(new TransportationTask(passenger, building, controller));
-						transportationTask.start();
-						building.wait();
-					}
-				}catch(InterruptedException e){
-					throw new SynchronizedException(e);
-				}
-			}
-		}
-		
-		
-		if(animationBoost == 0.0){
+		if(animationBoost == 0){
 			controller.run();
+		}else{
+			UIRunner.start(building);
 		}
 	}
 }

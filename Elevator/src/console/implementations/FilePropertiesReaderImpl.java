@@ -50,9 +50,9 @@ public class FilePropertiesReaderImpl implements IPropertiesReader {
 		return Integer.parseInt(properties.get(KEY_PASSENGERS_NUMBER));
 	}
 
-	public double getAnimationBoost() {
+	public int getAnimationBoost() {
 		// TODO Auto-generated method stub
-		return Double.parseDouble(properties.get(KEY_ANIMATION_BOOST));
+		return Integer.parseInt(properties.get(KEY_ANIMATION_BOOST));
 	}
 
 }

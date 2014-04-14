@@ -4,5 +4,5 @@ public interface IPropertiesReader {
 	int getStoriesNumber();
 	int getElevatorCapacity();
 	int getPassengersNumber();
-	double getAnimationBoost();
+	int getAnimationBoost();
 }
