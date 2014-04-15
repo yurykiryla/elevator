@@ -1,9 +1,11 @@
 package console.transportation;
 
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+
 
 
 
@@ -46,11 +48,16 @@ public class Controller {
 		this.building = building;
 		elevator = building.getElevator();
 		currentStory = elevator.getCurrentStory();
-		totalPassengers = building.getTotalPassengers();
+		totalPassengers = building.getProperties().getPassengersNumber();
 		totalStories = building.getStoreys().size();
 		elevatorContainer = elevator.getElevatorContainer();
 		elevatorCapacity = elevator.getCapacity();
 		PropertyConfigurator.configure(FILENAME_LOG_PROPERTIES);
+		if(new Random().nextInt(2) == 0){
+			direction = Directions.UP;
+		}else{
+			direction = Directions.DOWN;
+		}
 	}
 
 	public void run(){

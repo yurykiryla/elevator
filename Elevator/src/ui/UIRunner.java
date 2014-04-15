@@ -16,9 +16,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import console.items.Building;
+import console.items.Properties;
 
 public class UIRunner {
+	private static Properties properties;
 	
 	public UIRunner() {
 		JFrame jFrame = new JFrame("Elevator");
@@ -39,24 +40,24 @@ public class UIRunner {
 		
 		JLabel jLabelStoriesNumber = new JLabel("Stories number", SwingConstants.RIGHT);
 		JSpinner jSpinnerStoriesNumber;
-		SpinnerNumberModel snmStoriesNumber = new SpinnerNumberModel(5, 2, 9999, 1);
+		SpinnerNumberModel snmStoriesNumber = new SpinnerNumberModel(properties.getStoriesNumber(), 2, 9999, 1);
 		jSpinnerStoriesNumber = new JSpinner(snmStoriesNumber);
 		jPanelRight.add(jLabelStoriesNumber);
 		jPanelRight.add(jSpinnerStoriesNumber);
 		
 		JLabel jLabelElevatorCapacity = new JLabel("Elevator capacity", SwingConstants.RIGHT);
-		SpinnerNumberModel snmElevatorCapacity = new SpinnerNumberModel(2, 1, 9999, 1);
+		SpinnerNumberModel snmElevatorCapacity = new SpinnerNumberModel(properties.getElevatorCapacity(), 1, 9999, 1);
 		JSpinner jSpinnerElevatorCapacity = new JSpinner(snmElevatorCapacity);
 		jPanelRight.add(jLabelElevatorCapacity);
 		jPanelRight.add(jSpinnerElevatorCapacity);
 
 		JLabel jLabelPassengersNumber = new JLabel("Passengers number", SwingConstants.RIGHT);
-		SpinnerNumberModel spinnerNumberModelPassengersNumber = new SpinnerNumberModel(5, 1, 9999, 1);
+		SpinnerNumberModel spinnerNumberModelPassengersNumber = new SpinnerNumberModel(properties.getPassengersNumber(), 1, 9999, 1);
 		JSpinner jSpinnerPassengersNumber = new JSpinner(spinnerNumberModelPassengersNumber);
 		jPanelRight.add(jLabelPassengersNumber);
 		jPanelRight.add(jSpinnerPassengersNumber);
 		
-		JSlider jSliderAnimationBoost = new JSlider(0, 100, 5);
+		JSlider jSliderAnimationBoost = new JSlider(0, 100, properties.getAnimationBoost());
 		jSliderAnimationBoost.setMajorTickSpacing(20);
 		jSliderAnimationBoost.setMinorTickSpacing(5);
 		jSliderAnimationBoost.setLabelTable(jSliderAnimationBoost.createStandardLabels(20));
@@ -75,7 +76,8 @@ public class UIRunner {
 		jFrame.setVisible(true);
 	}
 
-	public static void start(Building building){
+	public static void start(Properties properties){
+		UIRunner.properties = properties;
 		System.out.println("UI realisation");
 		SwingUtilities.invokeLater(new Runnable() {
 			
