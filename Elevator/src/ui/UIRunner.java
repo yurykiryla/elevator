@@ -3,6 +3,9 @@ package ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -42,18 +45,18 @@ public class UIRunner implements ChangeListener, ActionListener{
 	private JSpinner jSpinnerStoriesNumber;
 	private JSpinner jSpinnerElevatorCapacity;
 	private JSpinner jSpinnerPassengersNumber;
-	
+	private JPanel jPanelLeft;
+	private JTextArea jTextArea;
 	
 	public UIRunner() {
 		jFrame = new JFrame("Elevator");
 		jFrame.setLayout(new FlowLayout());
-		jFrame.setSize(800, 600);
+		jFrame.setSize(240, 600);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setResizable(false);
 		
-		JPanel jPanelLeft = new JPanel();
+		jPanelLeft = new BuildingPanel();
 		jPanelLeft.setPreferredSize(new Dimension(560, 555));
-		jPanelLeft.setOpaque(true);
 		jPanelLeft.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		jFrame.add(jPanelLeft);
 		
@@ -155,7 +158,7 @@ public class UIRunner implements ChangeListener, ActionListener{
 	
 		box.add(Box.createRigidArea(new Dimension(100, 30)));
 		
-		JTextArea jTextArea = new JTextArea("Please select parameters and Start");
+		jTextArea = new JTextArea("Please select parameters and Start");
 		jTextArea.setLineWrap(true);
 		jTextArea.setWrapStyleWord(true);
 		jTextArea.setEditable(false);
@@ -199,15 +202,56 @@ public class UIRunner implements ChangeListener, ActionListener{
 					jSliderAnimationBoost.setEnabled(false);
 					jLabelAnimationBoost.setEnabled(false);
 					jButton.setText(BUTTON_ABORT);
+					jTextArea.setText("Transportation in progress");
+					jFrame.setSize(800, 600);
+					jPanelLeft.revalidate();
+					jPanelLeft.repaint();
+					jPanelLeft.setVisible(true);
 				}
 				break;
 			case BUTTON_ABORT:
 				building.getThreadGroup().interrupt();
 				jButton.setText(BUTTON_VIEW_LOG);
+				jTextArea.setText("Transportation is aborted");
 				break;
 			case BUTTON_VIEW_LOG:
 				break;
 		}
+	}
+	
+	private class BuildingPanel extends JPanel{
+		{
+			setBackground(Color.WHITE);
+			setVisible(false);
+		}
+		private static final int ELEVATOR_HEIGHT = 60;
+		
+		
+		@Override
+		protected void paintComponent(Graphics g) {
+			// TODO Auto-generated method stub
+			super.paintComponent(g);
+			int storyNumber = properties.getStoriesNumber();
+			int x, y, h, w;
+			
+			Graphics2D graphics2d = (Graphics2D) g;
+			Font font = new Font(getFont().getName(), Font.BOLD, 20);
+			graphics2d.setFont(font);
+			graphics2d.setColor(Color.BLACK);
+			
+			for(int i = 1; i <= storyNumber; i++){
+				x = 0;
+				y = ELEVATOR_HEIGHT * i;
+				String storeyNumber = String.valueOf(storyNumber - i + 1);
+				graphics2d.drawString(storeyNumber, x, y);
+				h = 3;
+				w = 100;
+				graphics2d.fillRect(x, y, w, h);
+				x = getWidth() - 100;
+				graphics2d.fillRect(x, y, w, h);
+			}
+		}
+		
 	}
 
 	public static void start(Properties properties){
