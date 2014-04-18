@@ -6,9 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,137 +13,44 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
 import javax.swing.JTextArea;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import console.items.Building;
 import console.items.Properties;
 import console.transportation.Controller;
 
-public class UIRunner implements ChangeListener, ActionListener{
+public class UIRunner implements ActionListener{
 	private static Properties properties;
 	private Building building;
 	private static final String BUTTON_START = "START";
 	private static final String BUTTON_ABORT = "ABORT";
 	private static final String BUTTON_VIEW_LOG = "VIEW LOG";
 	private JFrame jFrame;
-	private JSlider jSliderAnimationBoost;
-	private JLabel jLabelAnimationBoost;
 	private JButton jButton;
-	private JSpinner jSpinnerStoriesNumber;
-	private JSpinner jSpinnerElevatorCapacity;
-	private JSpinner jSpinnerPassengersNumber;
-	private JPanel jPanelLeft;
+	private JPanel jPanelBuilding;
 	private JTextArea jTextArea;
+	private ParametersPanel parametersPanel;
 	
 	public UIRunner() {
+		
 		jFrame = new JFrame("Elevator");
 		jFrame.setLayout(new FlowLayout());
-		jFrame.setSize(240, 600);
+		jFrame.setSize(UIDimensions.WINDOW_SIZE_START);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setResizable(false);
 		
-		jPanelLeft = new BuildingPanel();
-		jPanelLeft.setPreferredSize(new Dimension(560, 555));
-		jPanelLeft.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-		jFrame.add(jPanelLeft);
-		
-		JPanel jPanelRight = new JPanel(new FlowLayout());
-		jPanelRight.setPreferredSize(new Dimension(220, 555));
-		jPanelRight.setOpaque(true);
-		jPanelRight.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-		
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.ipadx = 5;
-		gridBagConstraints.weightx = 1.0;
-		JPanel jPanelParameters = new JPanel(gridBagLayout);
-		jPanelParameters.setBorder(BorderFactory.createEtchedBorder());
-		
-		JLabel jLabelParameters = new JLabel("Parameters");
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 0;
-		gridBagConstraints.anchor = GridBagConstraints.CENTER;
-		gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-		gridBagConstraints.insets = new Insets(5, 0, 10, 0);
-		gridBagLayout.setConstraints(jLabelParameters, gridBagConstraints);
-		jPanelParameters.add(jLabelParameters);
-		
-		JLabel jLabelStoriesNumber = new JLabel("Stories number", SwingConstants.RIGHT);
-		SpinnerNumberModel spinnerNumberModelStoriesNumber = new SpinnerNumberModel(properties.getStoriesNumber(), 2, 9999, 1);
-		jSpinnerStoriesNumber = new JSpinner(spinnerNumberModelStoriesNumber);
-		gridBagConstraints.insets = new Insets(10, 0, 5, 0);
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.anchor = GridBagConstraints.WEST;
-		gridBagLayout.setConstraints(jLabelStoriesNumber, gridBagConstraints);
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.anchor = GridBagConstraints.EAST;
-		gridBagLayout.setConstraints(jSpinnerStoriesNumber, gridBagConstraints);
-		jPanelParameters.add(jLabelStoriesNumber);
-		jPanelParameters.add(jSpinnerStoriesNumber);
-		
-		JLabel jLabelElevatorCapacity = new JLabel("Elevator capacity", SwingConstants.RIGHT);
-		SpinnerNumberModel spinnerNumberModelElevatorCapacity = new SpinnerNumberModel(properties.getElevatorCapacity(), 1, 9999, 1);
-		jSpinnerElevatorCapacity = new JSpinner(spinnerNumberModelElevatorCapacity);
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 2;
-		gridBagConstraints.anchor = GridBagConstraints.WEST;
-		gridBagLayout.setConstraints(jLabelElevatorCapacity, gridBagConstraints);
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 2;
-		gridBagConstraints.anchor = GridBagConstraints.EAST;
-		gridBagLayout.setConstraints(jSpinnerElevatorCapacity, gridBagConstraints);
-		jPanelParameters.add(jLabelElevatorCapacity);
-		jPanelParameters.add(jSpinnerElevatorCapacity);
-		
-		JLabel jLabelPassengersNumber = new JLabel("Passengers number", SwingConstants.RIGHT);
-		SpinnerNumberModel spinnerNumberModelPassengersNumber = new SpinnerNumberModel(properties.getPassengersNumber(), 1, 9999, 1);
-		jSpinnerPassengersNumber = new JSpinner(spinnerNumberModelPassengersNumber);
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 3;
-		gridBagConstraints.anchor = GridBagConstraints.WEST;
-		gridBagLayout.setConstraints(jLabelPassengersNumber, gridBagConstraints);
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 3;
-		gridBagConstraints.anchor = GridBagConstraints.EAST;
-		gridBagLayout.setConstraints(jSpinnerPassengersNumber, gridBagConstraints);
-		jPanelParameters.add(jLabelPassengersNumber);
-		jPanelParameters.add(jSpinnerPassengersNumber);
-		
-		jSliderAnimationBoost = new JSlider(0, 100, properties.getAnimationBoost());
-		jSliderAnimationBoost.setMajorTickSpacing(20);
-		jSliderAnimationBoost.setMinorTickSpacing(5);
-		jSliderAnimationBoost.setLabelTable(jSliderAnimationBoost.createStandardLabels(20));
-		jSliderAnimationBoost.setPaintTicks(true);
-		jSliderAnimationBoost.setPaintLabels(true);
-		jSliderAnimationBoost.addChangeListener(this);
-		jLabelAnimationBoost = new JLabel("Animation Boost (" + jSliderAnimationBoost.getValue() + ")");
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 4;
-		gridBagConstraints.anchor = GridBagConstraints.CENTER;
-		gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-		gridBagConstraints.insets = new Insets(15, 0, 0, 0);
-		gridBagLayout.setConstraints(jSliderAnimationBoost, gridBagConstraints);
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 5;
-		gridBagConstraints.insets = new Insets(0, 0, 15, 0);
-		gridBagLayout.setConstraints(jLabelAnimationBoost, gridBagConstraints);
-		jPanelParameters.add(jSliderAnimationBoost);
-		jPanelParameters.add(jLabelAnimationBoost);
+		JPanel jPanelControls = new JPanel(new FlowLayout());
+		jPanelControls.setPreferredSize(UIDimensions.CONTROLS_PANEL_DIMENSION);
+		jPanelControls.setOpaque(true);
+		jPanelControls.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		
 		Box box = Box.createVerticalBox();
-		box.add(jPanelParameters);
+		
+		parametersPanel =  new ParametersPanel(properties);
+		box.add(parametersPanel);
 		
 		box.add(Box.createRigidArea(new Dimension(100, 30)));
 		
@@ -166,17 +70,11 @@ public class UIRunner implements ChangeListener, ActionListener{
 		jScrollPaneText.setPreferredSize(new Dimension(200, 220));
 		box.add(jScrollPaneText);
 		
-		jPanelRight.add(box);
+		jPanelControls.add(box);
 		
-		jFrame.add(jPanelRight);
+		jFrame.add(jPanelControls);
 		
 		jFrame.setVisible(true);
-	}
-
-	@Override
-	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
-		jLabelAnimationBoost.setText("Animation Boost (" + jSliderAnimationBoost.getValue() + ")");
 	}
 
 	@Override
@@ -184,29 +82,23 @@ public class UIRunner implements ChangeListener, ActionListener{
 		// TODO Auto-generated method stub
 		switch (e.getActionCommand()){
 			case BUTTON_START:
-				int storiesNumber = Integer.parseInt(jSpinnerStoriesNumber.getValue().toString());
-				int elevatorCapacity = Integer.parseInt(jSpinnerElevatorCapacity.getValue().toString());
-				int passengersNumber = Integer.parseInt(jSpinnerPassengersNumber.getValue().toString());
-				int animationBoost = jSliderAnimationBoost.getValue();
-				properties = new Properties(storiesNumber, elevatorCapacity, passengersNumber, animationBoost);
+				properties = parametersPanel.getProperties();
 				building = new Building(properties);
-				if(animationBoost == 0){
+				if(properties.getAnimationBoost() == 0){
 					Controller controller = building.getController();
-					controller.run();
 					jFrame.setVisible(false);
-					System.exit(0);
+					controller.run();
+					
 				}else{
-					jSpinnerStoriesNumber.setEnabled(false);
-					jSpinnerElevatorCapacity.setEnabled(false);
-					jSpinnerPassengersNumber.setEnabled(false);
-					jSliderAnimationBoost.setEnabled(false);
-					jLabelAnimationBoost.setEnabled(false);
+					parametersPanel.disableProperties();
 					jButton.setText(BUTTON_ABORT);
 					jTextArea.setText("Transportation in progress");
 					jFrame.setSize(800, 600);
-					jPanelLeft.revalidate();
-					jPanelLeft.repaint();
-					jPanelLeft.setVisible(true);
+					jPanelBuilding = new BuildingPanel();
+					jPanelBuilding.setPreferredSize(new Dimension(560, 555));
+					jPanelBuilding.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+					jPanelBuilding.setBackground(Color.WHITE);
+					jFrame.add(jPanelBuilding);
 				}
 				break;
 			case BUTTON_ABORT:
@@ -220,12 +112,8 @@ public class UIRunner implements ChangeListener, ActionListener{
 	}
 	
 	private class BuildingPanel extends JPanel{
-		{
-			setBackground(Color.WHITE);
-			setVisible(false);
-		}
+		private static final long serialVersionUID = -1962069883230791714L;
 		private static final int ELEVATOR_HEIGHT = 60;
-		
 		
 		@Override
 		protected void paintComponent(Graphics g) {
