@@ -1,7 +1,6 @@
 package ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -28,6 +27,9 @@ public class UIRunner implements ActionListener{
 	private static final String BUTTON_START = "START";
 	private static final String BUTTON_ABORT = "ABORT";
 	private static final String BUTTON_VIEW_LOG = "VIEW LOG";
+	private static final String MESSAGE_ABORT = "Transportation is aborted";
+	private static final String MESSAGE_PROGRESS = "Transportation in progress";
+	private static final String MESSAGE_START = "Please select parameters and Start";
 	private JFrame jFrame;
 	private JButton jButton;
 	private JPanel jPanelBuilding;
@@ -52,7 +54,7 @@ public class UIRunner implements ActionListener{
 		parametersPanel =  new ParametersPanel(properties);
 		box.add(parametersPanel);
 		
-		box.add(Box.createRigidArea(new Dimension(100, 30)));
+		box.add(Box.createRigidArea(UIDimensions.RIGID_AREA_DIMENSION));
 		
 		jButton = new JButton(BUTTON_START);
 		jButton.addActionListener(this);
@@ -60,14 +62,12 @@ public class UIRunner implements ActionListener{
 		jPanelButton.add(jButton);
 		box.add(jPanelButton);
 	
-		box.add(Box.createRigidArea(new Dimension(100, 30)));
+		box.add(Box.createRigidArea(UIDimensions.RIGID_AREA_DIMENSION));
 		
-		jTextArea = new JTextArea("Please select parameters and Start");
-		jTextArea.setLineWrap(true);
-		jTextArea.setWrapStyleWord(true);
+		jTextArea = new JTextArea(MESSAGE_START);
 		jTextArea.setEditable(false);
 		JScrollPane jScrollPaneText = new JScrollPane(jTextArea);
-		jScrollPaneText.setPreferredSize(new Dimension(200, 220));
+		jScrollPaneText.setPreferredSize(UIDimensions.TEXT_PANEL_SIZE);
 		box.add(jScrollPaneText);
 		
 		jPanelControls.add(box);
@@ -87,15 +87,15 @@ public class UIRunner implements ActionListener{
 				if(properties.getAnimationBoost() == 0){
 					Controller controller = building.getController();
 					jFrame.setVisible(false);
+					jFrame.dispose();
 					controller.run();
-					
 				}else{
 					parametersPanel.disableProperties();
 					jButton.setText(BUTTON_ABORT);
-					jTextArea.setText("Transportation in progress");
-					jFrame.setSize(800, 600);
+					jTextArea.setText(MESSAGE_PROGRESS);
+					jFrame.setSize(UIDimensions.WINDOW_FULL_SIZE);
 					jPanelBuilding = new BuildingPanel();
-					jPanelBuilding.setPreferredSize(new Dimension(560, 555));
+					jPanelBuilding.setPreferredSize(UIDimensions.BUILDING_PANEL_DIMENSION);
 					jPanelBuilding.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 					jPanelBuilding.setBackground(Color.WHITE);
 					jFrame.add(jPanelBuilding);
@@ -104,7 +104,7 @@ public class UIRunner implements ActionListener{
 			case BUTTON_ABORT:
 				building.getThreadGroup().interrupt();
 				jButton.setText(BUTTON_VIEW_LOG);
-				jTextArea.setText("Transportation is aborted");
+				jTextArea.setText(MESSAGE_ABORT);
 				break;
 			case BUTTON_VIEW_LOG:
 				break;
@@ -113,7 +113,6 @@ public class UIRunner implements ActionListener{
 	
 	private class BuildingPanel extends JPanel{
 		private static final long serialVersionUID = -1962069883230791714L;
-		private static final int ELEVATOR_HEIGHT = 60;
 		
 		@Override
 		protected void paintComponent(Graphics g) {
@@ -129,13 +128,13 @@ public class UIRunner implements ActionListener{
 			
 			for(int i = 1; i <= storyNumber; i++){
 				x = 0;
-				y = ELEVATOR_HEIGHT * i;
+				y = UIDimensions.ELEVATOR_HEIGHT * i;
 				String storeyNumber = String.valueOf(storyNumber - i + 1);
 				graphics2d.drawString(storeyNumber, x, y);
 				h = 3;
 				w = 100;
 				graphics2d.fillRect(x, y, w, h);
-				x = getWidth() - 100;
+				x = getWidth() - w;
 				graphics2d.fillRect(x, y, w, h);
 			}
 		}
@@ -144,9 +143,7 @@ public class UIRunner implements ActionListener{
 
 	public static void start(Properties properties){
 		UIRunner.properties = properties;
-		System.out.println("UI realisation");
 		SwingUtilities.invokeLater(new Runnable() {
-			
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
