@@ -52,4 +52,10 @@ public class Properties {
 		this.animationBoost = animationBoost;
 	}	
 	
+	public int getDelay(){
+		if(animationBoost > 100 || animationBoost == 0){
+			return 0;
+		}
+		return 1001 - animationBoost * 10;
+	}
 }

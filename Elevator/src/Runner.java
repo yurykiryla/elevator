@@ -17,7 +17,7 @@ public class Runner {
 			Controller controller = building.getController();
 			controller.run();
 		}else{
-			UIRunner.start(properties);
+			UIRunner.run(properties);
 		}
 	}
 }
