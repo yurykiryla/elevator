@@ -1,6 +1,5 @@
 package ui;
 
-import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
