@@ -14,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -26,7 +27,13 @@ import console.items.Storey;
 import console.logging.ActionButtonAppender;
 import console.logging.ElevatorLogger;
 import console.logging.MessagesAreaAppender;
+import console.transportation.Controller;
 
+/**
+ * Start application with UI 
+ * @author user
+ *
+ */
 public class UIRunner implements ActionListener{
 	private static Properties properties;
 	private Building building;
@@ -39,6 +46,8 @@ public class UIRunner implements ActionListener{
 	private JTextArea messagesArea;
 	private PropertiesPanel propertiesPanel;
 	private Map<Integer, PresentationStorey> storeysMap;
+	private Controller controller;
+	private JProgressBar progressBar;
 	
 	public UIRunner() {
 		jFrame = new JFrame("ElevatorContainer");
@@ -73,6 +82,10 @@ public class UIRunner implements ActionListener{
 		jScrollPaneText.setPreferredSize(UIDimensions.TEXT_PANEL_SIZE);
 		box.add(jScrollPaneText);
 		
+		progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+		box.add(progressBar);
+		
 		jPanelControls.add(box);
 		
 		jFrame.add(jPanelControls);
@@ -89,14 +102,18 @@ public class UIRunner implements ActionListener{
 			case BUTTON_START:
 				properties = propertiesPanel.getProperties();
 				building = new Building(properties);
+				controller = building.getController();
 				if(properties.getAnimationBoost() == 0){
 					jFrame.setVisible(false);
 					jFrame.dispose();
-					building.getController().run();
+					controller.run();
 				}else{
 					propertiesPanel.disableProperties();
 					actionButton.setText(BUTTON_ABORT);
 					jFrame.setSize(UIDimensions.WINDOW_FULL_SIZE);
+					
+					progressBar.setMinimum(0);
+					progressBar.setMaximum(controller.getTotalPassengers());
 					
 					JPanel presentation = new JPanel();
 					presentation.setLayout(new BoxLayout(presentation, BoxLayout.Y_AXIS));
@@ -133,13 +150,14 @@ public class UIRunner implements ActionListener{
 								storeysMap.get(elevator.getCurrentStory()).setElevatorPassengers(elevator.getElevatorContainer());
 								jFrame.repaint();
 							}
+							progressBar.setValue(controller.getTransferPassengers());
 						}
 					});
 					timer.start();
 					
 					ElevatorLogger.LOGGER.addAppender(new MessagesAreaAppender(messagesArea));
 					ElevatorLogger.LOGGER.addAppender(new ActionButtonAppender(actionButton, BUTTON_VIEW_LOG));
-					controllerThread = new Thread(building.getController());
+					controllerThread = new Thread(controller);
 					controllerThread.start();
 				}
 				break;

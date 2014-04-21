@@ -4,6 +4,8 @@ package console.items;
  * Properties
  */
 public class Properties {
+	private static final int BASE_DALAY = 1001;
+	private static final int DELAY_MULTIPLIER = 10;
 	private int storiesNumber;
 	private int elevatorCapacity;
 	private int passengersNumber;
@@ -69,6 +71,6 @@ public class Properties {
 		if(animationBoost > 100 || animationBoost == 0){
 			return 0;
 		}
-		return 1001 - animationBoost * 10;
+		return BASE_DALAY - animationBoost * DELAY_MULTIPLIER;
 	}
 }

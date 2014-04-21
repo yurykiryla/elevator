@@ -18,7 +18,7 @@ import console.items.Passenger;
  */
 public abstract class AbstractContainer extends JComponent {
 	private static final long serialVersionUID = 1L;
-	private int x = 2;
+	private int x = UIDimensions.FIRST_PASSENGER_MARGIN;
 	
 	private Set<Passenger> passengers;
 
@@ -43,10 +43,8 @@ public abstract class AbstractContainer extends JComponent {
 		// TODO Auto-generated method stub
 		Graphics2D graphics2d = (Graphics2D) g;
 		graphics2d.setColor(Color.blue);
+		x = UIDimensions.FIRST_PASSENGER_MARGIN;
 		drawContainer(graphics2d);
-		
-		x = 2;
-		
 			if(passengers != null){
 				for(Passenger passenger : passengers){
 					drawPassenger(graphics2d, passenger);
@@ -73,9 +71,9 @@ public abstract class AbstractContainer extends JComponent {
 		int height = (int) Math.round(stringBounds.getHeight());
 		
 		graphics2d.setColor(Color.black);
-		graphics2d.drawString(id, x + UIDimensions.PASSENGERS_MARGIN, UIDimensions.PASSENGERS_CONTAINER_HEIGHT - 3 * UIDimensions.PASSENGERS_MARGIN);
-		graphics2d.draw(new Rectangle2D.Double(x, UIDimensions.PASSENGERS_CONTAINER_HEIGHT - 3 * UIDimensions.PASSENGERS_MARGIN - height,
-				width + 2 * UIDimensions.PASSENGERS_MARGIN, height + 1 * UIDimensions.PASSENGERS_MARGIN));
+		graphics2d.drawString(id, x + UIDimensions.PASSENGERS_MARGIN, UIDimensions.ID_Y);
+		graphics2d.draw(new Rectangle2D.Double(x, UIDimensions.ID_Y - height,
+				width + 2 * UIDimensions.PASSENGERS_MARGIN, height + UIDimensions.PASSENGERS_MARGIN));
 		x += width + 2 * UIDimensions.PASSENGERS_MARGIN;
 	}
 }

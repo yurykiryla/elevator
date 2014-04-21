@@ -53,6 +53,14 @@ public class Controller implements Runnable{
 		return building;
 	}
 
+	public int getTransferPassengers() {
+		return transferPassengers;
+	}
+
+	public int getTotalPassengers() {
+		return totalPassengers;
+	}
+
 	public void run(){
 		//starting of transportation process
 		for(Passenger passenger : building.getPassengers()){
