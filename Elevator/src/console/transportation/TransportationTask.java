@@ -4,17 +4,20 @@ import java.util.Set;
 
 import console.constants.Directions;
 import console.constants.TransportationState;
-import console.exceptions.SynchronizedException;
 import console.items.Building;
 import console.items.Passenger;
 
-public class TransportationTask implements Runnable {
+/**
+ * Passenger Transportation task
+ */
+public class TransportationTask extends Thread {
 	private final Passenger passenger;
 	private final Building building;
 	private final Controller controller;
 	private Set<Passenger> elevatorContainer;
 	private Set<Passenger> dispatchStoryContainer;
 	private Directions direction;
+	
 
 	public TransportationTask(Passenger passenger, Building building,
 			Controller controller) {
@@ -38,10 +41,13 @@ public class TransportationTask implements Runnable {
 		
 		
 		try{
+			//start transportation
 			synchronized (building) {
 				passenger.setTransportationState(TransportationState.IN_PROGRESS);
 				building.notify();
 			}
+			
+			// boading passengers to elevator
 			synchronized (dispatchStoryContainer) {
 				dispatchStoryContainer.wait();
 				while(!controller.boadingPassenger(passenger)){
@@ -50,6 +56,7 @@ public class TransportationTask implements Runnable {
 				dispatchStoryContainer.notifyAll();
 			}
 			
+			// deboading passengers from elevator
 			synchronized (elevatorContainer) {
 				elevatorContainer.wait();
 				while(!controller.deboadingPassenger(passenger)){
@@ -60,7 +67,7 @@ public class TransportationTask implements Runnable {
 	
 
 		}catch(InterruptedException e){
-			throw new SynchronizedException(e);
+			e.printStackTrace();
 		}
 		
 		passenger.setTransportationState(TransportationState.COMPLETED);
@@ -73,4 +80,11 @@ public class TransportationTask implements Runnable {
 	public Passenger getPassenger() {
 		return passenger;
 	}
+
+	@Override
+	public void interrupt() {
+		// TODO Auto-generated method stub
+		super.interrupt();
+		passenger.setTransportationState(TransportationState.ABORTED);
+	}	
 }

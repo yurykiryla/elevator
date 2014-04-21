@@ -38,11 +38,10 @@ public class UIRunner implements ActionListener{
 	private JButton actionButton;
 	private JTextArea messagesArea;
 	private PropertiesPanel propertiesPanel;
-	private Map<Storey, PresentationStorey> storeysMap;
+	private Map<Integer, PresentationStorey> storeysMap;
 	
 	public UIRunner() {
-		
-		jFrame = new JFrame("Elevator");
+		jFrame = new JFrame("ElevatorContainer");
 		jFrame.setLayout(new FlowLayout());
 		jFrame.setSize(UIDimensions.WINDOW_SIZE_START);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,9 +80,11 @@ public class UIRunner implements ActionListener{
 		jFrame.setVisible(true);
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		Thread controllerThread = null;
 		switch (e.getActionCommand()){
 			case BUTTON_START:
 				properties = propertiesPanel.getProperties();
@@ -97,26 +98,26 @@ public class UIRunner implements ActionListener{
 					actionButton.setText(BUTTON_ABORT);
 					jFrame.setSize(UIDimensions.WINDOW_FULL_SIZE);
 					
-					storeysMap = new HashMap<Storey, PresentationStorey>(properties.getStoriesNumber());
-					JPanel presentationArea = new JPanel();
-					presentationArea.setLayout(new BoxLayout(presentationArea, BoxLayout.Y_AXIS));
+					JPanel presentation = new JPanel();
+					presentation.setLayout(new BoxLayout(presentation, BoxLayout.Y_AXIS));
 					PresentationStorey.setPassengersViewNumber(properties.getElevatorCapacity());
 					
 					PresentationStorey presentationStorey;
 					List<Storey> storeys = building.getStoreys();
+					storeysMap = new HashMap<Integer, PresentationStorey>(properties.getStoriesNumber());
 					Elevator elevator = building.getElevator();
-					Storey storey;
 					for(int i = storeys.size() - 1; i > -1; i--){
-						storey = storeys.get(i);
+						Storey storey = storeys.get(i);
 						presentationStorey = 
-								new PresentationStorey(storey.getDispatchStoryContainer(), 
+								new PresentationStorey(i, storey.getDispatchStoryContainer(), 
 										storey.getArrivalStoryContainer());
-						presentationArea.add(presentationStorey);
-						storeysMap.put(storey, presentationStorey);
+						presentation.add(presentationStorey);
+						storeysMap.put(i, presentationStorey);
 					}
-					presentationStorey = storeysMap.get(storeys.get(elevator.getCurrentStory()));
+					presentationStorey = storeysMap.get(elevator.getCurrentStory());
 					presentationStorey.setElevatorPassengers(elevator.getElevatorContainer());
-					presentationArea.setVisible(true);
+					presentation.setVisible(true);
+					JScrollPane presentationArea = new JScrollPane(presentation);
 					presentationArea.setPreferredSize(UIDimensions.BUILDING_PANEL_DIMENSION);
 					presentationArea.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 					presentationArea.setBackground(Color.WHITE);
@@ -127,9 +128,9 @@ public class UIRunner implements ActionListener{
 						public void actionPerformed(ActionEvent e) {
 							// TODO Auto-generated method stub
 							for(Storey storey : building.getStoreys()){
-								storeysMap.get(storey).update(storey.getDispatchStoryContainer(), storey.getArrivalStoryContainer());
+								storeysMap.get(storey.getStoreyNumber()).update(storey.getDispatchStoryContainer(), storey.getArrivalStoryContainer());
 								Elevator elevator = building.getElevator();
-								storeysMap.get(building.getStoreys().get(elevator.getCurrentStory())).setElevatorPassengers(elevator.getElevatorContainer());
+								storeysMap.get(elevator.getCurrentStory()).setElevatorPassengers(elevator.getElevatorContainer());
 								jFrame.repaint();
 							}
 						}
@@ -138,13 +139,15 @@ public class UIRunner implements ActionListener{
 					
 					ElevatorLogger.LOGGER.addAppender(new MessagesAreaAppender(messagesArea));
 					ElevatorLogger.LOGGER.addAppender(new ActionButtonAppender(actionButton, BUTTON_VIEW_LOG));
-					new Thread(building.getThreadGroup(), building.getController()).start();
-										
+					controllerThread = new Thread(building.getController());
+					controllerThread.start();
 				}
 				break;
 				
 			case BUTTON_ABORT:
-				building.getThreadGroup().interrupt();
+				if(controllerThread != null){
+					controllerThread.interrupt();
+				}
 				building.getController().abortTransportation();
 				actionButton.setText(BUTTON_VIEW_LOG);
 				break;

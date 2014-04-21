@@ -3,11 +3,20 @@ package console.items;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Storey
+ * @author Yury
+ *
+ */
 public class Storey {
 	private final int storeyNumber;
 	private Set<Passenger> dispatchStoryContainer;
 	private Set<Passenger> arrivalStoryContainer;
 
+	/**
+	 * creates a floor with a specified number
+	 * @param storeyNumber
+	 */
 	public Storey(int storeyNumber) {
 		super();
 		this.storeyNumber = storeyNumber;
@@ -31,10 +40,18 @@ public class Storey {
 		return storeyNumber;
 	}
 
+	/**
+	 * Passenger enters the elevator
+	 * @param passenger
+	 */
 	public void boadingPassenger(Passenger passenger){
 		dispatchStoryContainer.remove(passenger);
 	}
 
+	/**
+	 * Passenger gets off the elevator
+	 * @param passenger
+	 */
 	public void deboadingPassenger(Passenger passenger){
 		arrivalStoryContainer.add(passenger);
 	}

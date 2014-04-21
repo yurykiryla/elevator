@@ -1,5 +1,8 @@
 package console.constants;
 
+/**
+ * Controller actions
+ */
 public enum Actions {
 	STARTING_TRANSPORTATION,
 	COMPLETION_TRANSPORTATION,

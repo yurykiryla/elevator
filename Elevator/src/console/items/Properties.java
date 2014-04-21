@@ -1,5 +1,8 @@
 package console.items;
 
+/**
+ * Properties
+ */
 public class Properties {
 	private int storiesNumber;
 	private int elevatorCapacity;
@@ -11,6 +14,13 @@ public class Properties {
 		// TODO Auto-generated constructor stub
 	}
 	
+	/**
+	 * sets initial parameters
+	 * @param storiesNumber - number of floors
+	 * @param elevatorCapacity - elevator capacity
+	 * @param passengersNumber - number of passengers
+	 * @param animationBoost - animation boost
+	 */
 	public Properties(int storiesNumber, int elevatorCapacity,
 			int passengersNumber, int animationBoost) {
 		super();
@@ -52,6 +62,9 @@ public class Properties {
 		this.animationBoost = animationBoost;
 	}	
 	
+	/**
+	 * returns the time delay
+	 */
 	public int getDelay(){
 		if(animationBoost > 100 || animationBoost == 0){
 			return 0;

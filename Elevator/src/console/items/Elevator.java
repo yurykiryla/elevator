@@ -3,11 +3,19 @@ package console.items;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Elevator
+ */
 public class Elevator {
 	private final int capacity;
 	private int currentStory;
 	private Set<Passenger> elevatorContainer;
 
+	/**
+	 * Create elevator
+	 * @param capacity - elevator capacity
+	 * @param currentStory - floor on which the elevator
+	 */
 	public Elevator(int capacity, int currentStory) {
 		super();
 		this.capacity = capacity;
@@ -31,17 +39,25 @@ public class Elevator {
 		return elevatorContainer;
 	}
 	
+	/**
+	 * Passenger enters the elevator
+	 * @param passenger
+	 */
 	public void boadingPassenger(Passenger passenger){
 		elevatorContainer.add(passenger);
 	}
 	
+	/**
+	 * Passenger gets off the elevator
+	 * @param passenger
+	 */
 	public void deboadingPassenger(Passenger passenger){
 		elevatorContainer.remove(passenger);
 	}
 
 	@Override
 	public String toString() {
-		return "Elevator [capacity=" + capacity + ", currentStory="
+		return "ElevatorContainer [capacity=" + capacity + ", currentStory="
 				+ currentStory + ", elevatorContainer=" + elevatorContainer
 				+ "]";
 	}

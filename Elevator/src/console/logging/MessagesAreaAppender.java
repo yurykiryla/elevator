@@ -7,6 +7,9 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.WriterAppender;
 import org.apache.log4j.spi.LoggingEvent;
 
+/**
+ * intended for messages application
+ */
 public class MessagesAreaAppender extends WriterAppender {
 	private JTextArea messagesArea;
 	private static final String LOG_PATTERN = " %m%n";
@@ -22,9 +25,5 @@ public class MessagesAreaAppender extends WriterAppender {
 	public void append(LoggingEvent event) {
 		messagesArea.append(layout.format(event));
 		messagesArea.setCaretPosition(messagesArea.getText().length());
-	}
-	
-	
-	
-	
+	}	
 }

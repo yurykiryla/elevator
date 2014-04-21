@@ -9,6 +9,9 @@ import org.apache.log4j.spi.LoggingEvent;
 
 import console.constants.Actions;
 
+/**
+ * Awaiting finalize transportation process then changes name buttons
+ */
 public class ActionButtonAppender extends WriterAppender {
 	private JButton actionButton;
 	private static final String LOG_PATTERN = "%m%n";

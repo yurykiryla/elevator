@@ -4,15 +4,17 @@ import java.util.Random;
 import java.util.Set;
 
 import console.constants.Actions;
+import console.constants.Containers;
 import console.constants.Directions;
 import console.constants.TransportationState;
-import console.exceptions.SynchronizedException;
 import console.items.Building;
 import console.items.Elevator;
 import console.items.Passenger;
-import console.items.Storey;
 import console.logging.ElevatorLogger;
 
+/**
+ * management of the transportation process
+ */
 public class Controller implements Runnable{
 	private final Building building;	
 	private final Elevator elevator;
@@ -24,7 +26,12 @@ public class Controller implements Runnable{
 	private Set<Passenger> elevatorContainer;
 	private final int elevatorCapacity;
 	private final int delay;
+	private volatile boolean aborted = false;
 	
+	/**
+	 * Create controller for building
+	 * @param building
+	 */
 	public Controller(Building building) {
 		super();
 		this.building = building;
@@ -45,17 +52,21 @@ public class Controller implements Runnable{
 	public Building getBuilding() {
 		return building;
 	}
-	
-
-	public int getTransferPassengers() {
-		return transferPassengers;
-	}
-
-	public int getTotalPassengers() {
-		return totalPassengers;
-	}
 
 	public void run(){
+		//starting of transportation process
+		for(Passenger passenger : building.getPassengers()){
+			TransportationTask task = new TransportationTask(passenger, building, this);
+			synchronized (building) {
+				task.start();
+				try {
+					building.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		ElevatorLogger.LOGGER.info(Actions.STARTING_TRANSPORTATION);
 		try {
 			Thread.sleep(delay);
@@ -63,6 +74,8 @@ public class Controller implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// movement of the elevator
 		while (true){
 			if (currentStory == 0){
 				direction = Directions.UP;
@@ -71,6 +84,7 @@ public class Controller implements Runnable{
 				direction = Directions.DOWN;
 			}
 			try{
+				// deboading passengers from elevator
 				synchronized (elevatorContainer) {
 					if(isDeboadingPassenger()){
 						elevatorContainer.notifyAll();
@@ -82,6 +96,8 @@ public class Controller implements Runnable{
 				
 				Set<Passenger> dispatchStoryContainer = 
 						building.getStoreys().get(currentStory).getDispatchStoryContainer();
+				
+				// boading passengers to elevator
 				synchronized (dispatchStoryContainer) {
 					if(isBoadingPassenger(dispatchStoryContainer)){
 						dispatchStoryContainer.notifyAll();
@@ -91,11 +107,15 @@ public class Controller implements Runnable{
 					}
 				}
 			}catch(InterruptedException e){
-				throw new SynchronizedException(e);
+				e.printStackTrace();
 			}
 			
+			// ending transportation
 			if(transferPassengers == totalPassengers){
 				break;
+			}
+			if(aborted){
+				return;
 			}
 			
 			switch (direction) {
@@ -122,12 +142,21 @@ public class Controller implements Runnable{
 		ElevatorLogger.LOGGER.info(Actions.COMPLETION_TRANSPORTATION);
 	}
 	
+	/**
+	 * boading passenger to elevator
+	 * @param passenger
+	 * @return
+	 */
 	public synchronized boolean boadingPassenger(Passenger passenger){
+		if(aborted){
+			return false;
+		}
 		if(passenger.getTransportationTask().getDirection() == direction && 
 				elevatorContainer.size() < elevatorCapacity){
 			ElevatorLogger.LOGGER.info(Actions.BOADING_OF_PASSENGER + getLoggingMessage(passenger));
 			elevator.boadingPassenger(passenger);
 			building.getStoreys().get(passenger.getDispatchStory()).boadingPassenger(passenger);
+			passenger.setCurrentContainer(Containers.ELEVATOR_CONTAINER);
 			try {
 				Thread.sleep(delay);
 			} catch (InterruptedException e) {
@@ -140,11 +169,20 @@ public class Controller implements Runnable{
 		}
 	}
 	
+	/**
+	 * deboading passenger from elevator
+	 * @param passenger
+	 * @return
+	 */
 	public synchronized boolean deboadingPassenger(Passenger passenger){
+		if(aborted){
+			return false;
+		}
 		if(passenger.getDestinationStory() == currentStory){
 			ElevatorLogger.LOGGER.info(Actions.DEBOADING_OF_PASSENGER + getLoggingMessage(passenger));
 			building.getStoreys().get(currentStory).deboadingPassenger(passenger);;
 			elevator.deboadingPassenger(passenger);
+			passenger.setCurrentContainer(Containers.ARRIVAL_STORY_CONTAINER);
 			transferPassengers++;
 			try {
 				Thread.sleep(delay);
@@ -158,23 +196,17 @@ public class Controller implements Runnable{
 		}
 	}
 	
+	/**
+	 * aborting transportation process
+	 */
 	public void abortTransportation(){
+		aborted = true;
 		ElevatorLogger.LOGGER.info(Actions.ABORTING_TRANSPORTATION);
-		abortTransportation(elevatorContainer, "elevatorContainer");
-		for(Storey storey : building.getStoreys()){
-			abortTransportation(storey.getDispatchStoryContainer(), "dispatchStoryContainer");
-			abortTransportation(storey.getArrivalStoryContainer(), "arrivalStoryContainer");
-		}
-	}
-	
-	private void abortTransportation(Set<Passenger> passengers, String containerName){
-		if(!passengers.isEmpty()){
-			for(Passenger passenger : passengers){
-				if(passenger.getTransportationState() != TransportationState.COMPLETED){
-					passenger.setTransportationState(TransportationState.ABORTED);
-				}
-				ElevatorLogger.LOGGER.info("passenger" + passenger.getId() + " in " + containerName + ", transportation state - " + passenger.getTransportationState());
+		for(Passenger passenger : building.getPassengers()){
+			if(TransportationState.COMPLETED != passenger.getTransportationState()){
+				passenger.getTransportationTask().interrupt();
 			}
+			ElevatorLogger.LOGGER.info(passenger.getCurrentState());
 		}
 	}
 	
@@ -189,6 +221,7 @@ public class Controller implements Runnable{
 		}
 		return false;
 	}
+	
 	private boolean isDeboadingPassenger(){
 		if(elevatorContainer.isEmpty()){
 			return false;
@@ -214,6 +247,4 @@ public class Controller implements Runnable{
 	private String getLoggingMessage(Passenger passenger){
 		return " (passanger" + passenger.getId() + " on story-" + currentStory + ")";
 	}
-	
-	
 }

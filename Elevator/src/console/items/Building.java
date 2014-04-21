@@ -1,22 +1,29 @@
 package console.items;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import console.constants.Containers;
 import console.constants.TransportationState;
-import console.exceptions.SynchronizedException;
 import console.transportation.Controller;
-import console.transportation.TransportationTask;
 
+/**
+ * Building
+ */
 public class Building {
 	private final Elevator elevator;
 	private final List<Storey> storeys;
 	private final Controller controller;
-	private final ThreadGroup threadGroup = new ThreadGroup("PassengerTasks");
 	private final Properties properties;
+	private final Set<Passenger> passengers;
 	
+	/**
+	 * Creates a building based on the parameters passed
+	 * @param properties
+	 */
 	public Building(Properties properties) {
 		super();
 		this.properties = properties;
@@ -27,37 +34,18 @@ public class Building {
 		for(int i = 0; i < properties.getStoriesNumber(); i++){
 			storeys.add(new Storey(i));
 		}
-		
+		passengers = new HashSet<>();
 		for (int i = 0; i < properties.getPassengersNumber(); i++){
 			int dispatchStory = rnd.nextInt(storiesNumber);
 			int destinationStory = rnd.nextInt(storiesNumber - 1);
 			if (destinationStory >= dispatchStory){
 				destinationStory++;
 			}
-			Passenger passenger = new Passenger(i, dispatchStory, destinationStory);
+			Passenger passenger = new Passenger(i, dispatchStory, destinationStory, Containers.DISPATCH_STORY_CONTAINER);
 			storeys.get(dispatchStory).addNewPassenger(passenger);
+			passengers.add(passenger);
 		}
-		
 		controller = new Controller(this);
-		for(Storey storey : storeys){
-			Set<Passenger> dispatchStoryContainer = storey.getDispatchStoryContainer();
-			for(Passenger passenger : dispatchStoryContainer){
-				try{
-					synchronized (this) {
-						Thread transportationTask = 
-								new Thread(threadGroup, new TransportationTask(passenger, this, controller));
-						transportationTask.start();
-						this.wait();
-					}
-				}catch(InterruptedException e){
-					throw new SynchronizedException(e);
-				}
-			}
-		}
-	}
-
-	public ThreadGroup getThreadGroup() {
-		return threadGroup;
 	}
 
 	public Properties getProperties() {
@@ -68,11 +56,10 @@ public class Building {
 		return controller;
 	}
 
-	@Override
-	public String toString() {
-		return "Building [elevator=" + elevator + ", storeys=" + storeys + "]";
+	public Set<Passenger> getPassengers() {
+		return passengers;
 	}
-
+	
 	public Elevator getElevator() {
 		return elevator;
 	}
@@ -80,7 +67,19 @@ public class Building {
 	public List<Storey> getStoreys() {
 		return storeys;
 	}
-	
+
+
+	@Override
+	public String toString() {
+		return "Building [elevator=" + elevator + ", storeys=" + storeys + "]";
+	}
+
+	/**
+	 * Validation process is complete transportation
+	 * @return
+	 * true - if all the conditions of the completion of transportation, 
+	 * false - if transportation is not valid
+	 */
 	public boolean isValidTransportation(){
 		if(!elevator.getElevatorContainer().isEmpty()){
 			return false;

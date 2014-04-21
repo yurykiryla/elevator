@@ -15,6 +15,9 @@ import javax.swing.event.ChangeListener;
 
 import console.items.Properties;
 
+/**
+ * Properties panel
+ */
 public class PropertiesPanel extends JPanel implements ChangeListener{
 	private static final long serialVersionUID = -7792138540825581130L;
 	
@@ -24,7 +27,7 @@ public class PropertiesPanel extends JPanel implements ChangeListener{
 	private static final String PANEL_NAME = "Parameters";
 	private static final int ELEVATOR_CAPACITY_MAX = 9999;
 	private static final int ELEVATOR_CAPACITY_MIN = 1;
-	private static final String ELEVATOR_CAPACITY_NAME = "Elevator capacity";
+	private static final String ELEVATOR_CAPACITY_NAME = "ElevatorContainer";
 	private static final int ELEVATOR_CAPACITY_STEP = 1;
 	private static final int PASSENGERS_NUMBER_MAX = 9999;
 	private static final int PASSENGERS_NUMBER_MIN = 1;

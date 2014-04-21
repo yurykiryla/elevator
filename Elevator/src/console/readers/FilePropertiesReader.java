@@ -8,6 +8,9 @@ import java.util.Scanner;
 
 import console.items.Properties;
 
+/**
+ * reads the application properties
+ */
 public class FilePropertiesReader {
 	private static final String FILENAME = "src/source/config.property";
 	private static final String REGEX = ";";
@@ -16,6 +19,11 @@ public class FilePropertiesReader {
 	private static final String KEY_PASSENGERS_NUMBER = "passengersNumber";
 	private static final String KEY_ANIMATION_BOOST = "animationBoost";
 	
+	/**
+	 * 
+	 * @return
+	 * Properties from file
+	 */
 	public static Properties getProperties(){
 		Scanner sc = null;
 		Map<String, String> properties = new HashMap<String, String>();
