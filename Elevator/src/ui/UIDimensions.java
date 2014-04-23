@@ -18,14 +18,13 @@ public class UIDimensions {
 	public static final int ELEVATOR_CAPACITY_LABEL_X = 0;
 	public static final int ELEVATOR_CAPACITY_X = 1;
 	public static final int ELEVATOR_CAPACITY_Y = 2;
-	public static final int ELEVATOR_HEIGHT = 60;
 	public static final int ELEVATOR_PADDING = 5;
 	public static final int FIRST_PASSENGER_MARGIN = 2;
-	public static final int ID_Y = 25;
+	public static final int ID_Y = 20;
 	public static final Insets LABEL_PARAMETERS_PADDING = new Insets(5, 0, 10, 0);
 	public static final int LABEL_PARAMETERS_X = 0;
 	public static final int LABEL_PARAMETERS_Y = 0;
-	public static final int PASSENGERS_CONTAINER_HEIGHT = 40;
+	public static final int PASSENGERS_CONTAINER_HEIGHT = 30;
 	public static final int PASSENGERS_CONTAINER_WIDTH = 35;
 	public static final int PASSENGERS_MARGIN = 5;
 	public static final int PASSENGERS_NUMBER_LABEL_X = 0;

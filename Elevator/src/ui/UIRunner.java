@@ -4,9 +4,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -45,7 +43,7 @@ public class UIRunner implements ActionListener{
 	private JButton actionButton;
 	private JTextArea messagesArea;
 	private PropertiesPanel propertiesPanel;
-	private Map<Integer, PresentationStorey> storeysMap;
+	private PresentationStorey[] pStoreys;
 	private Controller controller;
 	private JProgressBar progressBar;
 	
@@ -121,7 +119,7 @@ public class UIRunner implements ActionListener{
 					
 					PresentationStorey presentationStorey;
 					List<Storey> storeys = building.getStoreys();
-					storeysMap = new HashMap<Integer, PresentationStorey>(properties.getStoriesNumber());
+					pStoreys = new PresentationStorey[properties.getStoriesNumber()];
 					Elevator elevator = building.getElevator();
 					for(int i = storeys.size() - 1; i > -1; i--){
 						Storey storey = storeys.get(i);
@@ -129,9 +127,9 @@ public class UIRunner implements ActionListener{
 								new PresentationStorey(i, storey.getDispatchStoryContainer(), 
 										storey.getArrivalStoryContainer());
 						presentation.add(presentationStorey);
-						storeysMap.put(i, presentationStorey);
+						pStoreys[i] = presentationStorey;
 					}
-					presentationStorey = storeysMap.get(elevator.getCurrentStory());
+					presentationStorey = pStoreys[elevator.getCurrentStory()];
 					presentationStorey.setElevatorPassengers(elevator.getElevatorContainer());
 					presentation.setVisible(true);
 					JScrollPane presentationArea = new JScrollPane(presentation);
@@ -145,9 +143,9 @@ public class UIRunner implements ActionListener{
 						public void actionPerformed(ActionEvent e) {
 							// TODO Auto-generated method stub
 							for(Storey storey : building.getStoreys()){
-								storeysMap.get(storey.getStoreyNumber()).update(storey.getDispatchStoryContainer(), storey.getArrivalStoryContainer());
+								pStoreys[storey.getStoreyNumber()].update(storey.getDispatchStoryContainer(), storey.getArrivalStoryContainer());
 								Elevator elevator = building.getElevator();
-								storeysMap.get(elevator.getCurrentStory()).setElevatorPassengers(elevator.getElevatorContainer());
+								pStoreys[elevator.getCurrentStory()].setElevatorPassengers(elevator.getElevatorContainer());
 								jFrame.repaint();
 							}
 							progressBar.setValue(controller.getTransferPassengers());
